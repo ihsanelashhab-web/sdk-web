@@ -6,7 +6,8 @@ export default function App() {
   const [retries, setRetries] = useState(true);
   const [pagination, setPagination] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [done, setDone] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const allLangs = [
     { id: "typescript", label: "TypeScript", short: "TS" },
@@ -22,15 +23,44 @@ export default function App() {
     );
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!file) return alert("Please upload an OpenAPI file first!");
     if (langs.length === 0) return alert("Please select at least one language!");
+
     setGenerating(true);
-    setDone(false);
-    setTimeout(() => {
+    setResult(null);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("langs", JSON.stringify(langs));
+
+      const res = await fetch("http://localhost:4000/generate", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Generation failed");
+
+      setResult(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
       setGenerating(false);
-      setDone(true);
-    }, 2500);
+    }
+  };
+
+  const downloadFile = (filename: string, content: string) => {
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -72,7 +102,7 @@ export default function App() {
             transition: "all 0.2s"
           }}>
             <input type="file" accept=".json,.yaml,.yml" style={{ display: "none" }}
-              onChange={e => { setFile(e.target.files?.[0] || null); setDone(false); }} />
+              onChange={e => { setFile(e.target.files?.[0] || null); setResult(null); }} />
             <span style={{ fontSize: "32px", marginBottom: "12px" }}>⬆️</span>
             <span style={{ fontWeight: 600 }}>
               {file ? `✅ ${file.name}` : "Drop your OpenAPI file here"}
@@ -85,7 +115,6 @@ export default function App() {
 
         {/* Languages + Config */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "24px" }}>
-          {/* Languages */}
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
             <div style={{ fontWeight: 600, marginBottom: "16px" }}>⌨️ Target Languages</div>
             {allLangs.map(lang => (
@@ -106,7 +135,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Config */}
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
             <div style={{ fontWeight: 600, marginBottom: "16px" }}>⚡ Configuration</div>
             {[
@@ -145,17 +173,40 @@ export default function App() {
           fontWeight: 700, fontSize: "16px", cursor: generating ? "not-allowed" : "pointer",
           transition: "all 0.2s"
         }}>
-          {generating ? "⚡ Generating..." : done ? "✅ Generated! Download SDK" : "⚡ Generate SDK"}
+          {generating ? "⚡ Generating..." : result ? "⚡ Generate Again" : "⚡ Generate SDK"}
         </button>
 
-        {done && (
+        {/* Error */}
+        {error && (
+          <div style={{
+            marginTop: "16px", background: "#1f0f0f", border: "1px solid #ef444433",
+            borderRadius: "12px", padding: "20px", textAlign: "center", color: "#ef4444"
+          }}>
+            ❌ {error}
+          </div>
+        )}
+
+        {/* Result */}
+        {result && (
           <div style={{
             marginTop: "16px", background: "#0f1f0f", border: "1px solid #22c55e33",
-            borderRadius: "12px", padding: "20px", textAlign: "center"
+            borderRadius: "12px", padding: "20px"
           }}>
-            <div style={{ color: "#22c55e", fontWeight: 700, fontSize: "18px" }}>✅ SDK Generated Successfully!</div>
-            <div style={{ color: "#888", marginTop: "8px" }}>
-              Generated for: {langs.join(", ")} • {file?.name}
+            <div style={{ color: "#22c55e", fontWeight: 700, fontSize: "18px", marginBottom: "8px" }}>
+              ✅ SDK Generated Successfully!
+            </div>
+            <div style={{ color: "#888", marginBottom: "16px" }}>
+              {result.title} v{result.version} • {result.endpoints} endpoints
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {Object.entries(result.files).map(([filename, content]) => (
+                <button key={filename} onClick={() => downloadFile(filename, content as string)} style={{
+                  padding: "8px 16px", borderRadius: "8px", border: "1px solid #22c55e44",
+                  background: "#111", color: "#22c55e", cursor: "pointer", fontSize: "13px"
+                }}>
+                  ⬇️ {filename}
+                </button>
+              ))}
             </div>
           </div>
         )}
