@@ -36,7 +36,7 @@ export default function App() {
       formData.append("file", file);
       formData.append("langs", JSON.stringify(langs));
 
-      const res = await fetch("http://localhost:4000/generate", {
+      const res = await fetch("https://api-to-sdk-production.up.railway.app/generate", {
         method: "POST",
         body: formData,
       });
