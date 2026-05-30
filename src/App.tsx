@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Landing from "./Landing";
 
 interface SDKResult {
   title: string;
@@ -8,6 +9,8 @@ interface SDKResult {
 }
 
 export default function App() {
+  const [showLanding, setShowLanding] = useState(true);
+  if (showLanding) return <Landing onStart={() => setShowLanding(false)} />;
   const [file, setFile] = useState<File | null>(null);
   const [langs, setLangs] = useState<string[]>(["typescript"]);
   const [retries, setRetries] = useState(true);
