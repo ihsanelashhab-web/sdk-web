@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Landing from "./Landing";
+import { supabase } from "./supabase";
 
 interface SDKResult {
   title: string;
@@ -10,7 +11,7 @@ interface SDKResult {
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
-  if (showLanding) return <Landing onStart={() => setShowLanding(false)} />;
+  const [user, setUser] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
   const [langs, setLangs] = useState<string[]>(["typescript"]);
   const [retries, setRetries] = useState(true);
@@ -33,6 +34,20 @@ export default function App() {
       prev.includes(id) ? prev.filter(l => l !== id) : [...prev, id]
     );
   };
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (showLanding) return <Landing onStart={() => setShowLanding(false)} user={user} onLogin={async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: 'http://localhost:3000' } });
+  }} onLogout={async () => { await supabase.auth.signOut(); }} />;
 
   const handleGenerate = async () => {
     if (!file) return alert("Please upload an OpenAPI file first!");

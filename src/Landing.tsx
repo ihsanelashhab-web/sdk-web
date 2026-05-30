@@ -12,7 +12,7 @@ const steps = [
   { n: "03", title: "Download your SDK", desc: "Get clean, typed, ready-to-use code" },
 ];
 
-export default function Landing({ onStart }: { onStart: () => void }) {
+export default function Landing({ onStart, user, onLogin, onLogout }: { onStart: () => void, user: any, onLogin: () => void, onLogout: () => void }) {
   return (
     <div style={{ background: "#000", color: "#fff", minHeight: "100vh", fontFamily: "system-ui, sans-serif" }}>
 
@@ -25,7 +25,16 @@ export default function Landing({ onStart }: { onStart: () => void }) {
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <a href="https://github.com/ihsanelashhab-web/api-to-sdk" target="_blank" rel="noreferrer" style={{ color: "#888", fontSize: "14px", textDecoration: "none" }}>GitHub</a>
           <a href="https://github.com/ihsanelashhab-web/api-to-sdk/issues/new" target="_blank" rel="noreferrer" style={{ color: "#888", fontSize: "14px", textDecoration: "none" }}>🐛 Report a Bug</a>
-          <button onClick={onStart} style={{ background: "#fff", color: "#000", border: "none", padding: "8px 18px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}>Try free →</button>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <img src={user.user_metadata?.avatar_url} alt="avatar" style={{ width: "28px", height: "28px", borderRadius: "50%" }} />
+              <span style={{ color: "#888", fontSize: "14px" }}>{user.user_metadata?.user_name}</span>
+              <button onClick={onStart} style={{ background: "#22c55e", color: "#000", border: "none", padding: "8px 18px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}>Dashboard →</button>
+              <button onClick={onLogout} style={{ background: "none", color: "#555", border: "1px solid #333", padding: "8px 14px", borderRadius: "8px", fontSize: "13px", cursor: "pointer" }}>Logout</button>
+            </div>
+          ) : (
+            <button onClick={onLogin} style={{ background: "#fff", color: "#000", border: "none", padding: "8px 18px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}>Sign in with GitHub →</button>
+          )}
         </div>
       </nav>
 
