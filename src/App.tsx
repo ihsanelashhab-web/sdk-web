@@ -1,12 +1,19 @@
 import { useState } from "react";
 
+interface SDKResult {
+  title: string;
+  version: string;
+  endpoints: number;
+  files: Record<string, string>;
+}
+
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
   const [langs, setLangs] = useState<string[]>(["typescript"]);
   const [retries, setRetries] = useState(true);
   const [pagination, setPagination] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<SDKResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<{name: string, content: string} | null>(null);
 
@@ -47,13 +54,14 @@ export default function App() {
       if (!res.ok) throw new Error(data.error || "Generation failed");
 
       setResult(data);
-    } catch (err: any) {
-      if (err.message === "Failed to fetch") {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
+      if (error.message === "Failed to fetch") {
         setError("Cannot connect to server. Please check your internet connection and try again.");
-      } else if (err.message.includes("Generation failed")) {
+      } else if (error.message.includes("Generation failed")) {
         setError("SDK generation failed. Make sure your OpenAPI file is valid (JSON or YAML).");
       } else {
-        setError(err.message || "An unexpected error occurred. Please try again.");
+        setError(error.message || "An unexpected error occurred. Please try again.");
       }
     } finally {
       setGenerating(false);
