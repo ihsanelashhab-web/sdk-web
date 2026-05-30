@@ -24,6 +24,7 @@ export default function Landing({ onStart }: { onStart: () => void }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <a href="https://github.com/ihsanelashhab-web/api-to-sdk" target="_blank" rel="noreferrer" style={{ color: "#888", fontSize: "14px", textDecoration: "none" }}>GitHub</a>
+          <a href="https://github.com/ihsanelashhab-web/api-to-sdk/issues/new" target="_blank" rel="noreferrer" style={{ color: "#888", fontSize: "14px", textDecoration: "none" }}>🐛 Report a Bug</a>
           <button onClick={onStart} style={{ background: "#fff", color: "#000", border: "none", padding: "8px 18px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}>Try free →</button>
         </div>
       </nav>
