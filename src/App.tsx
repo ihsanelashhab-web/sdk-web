@@ -69,11 +69,13 @@ export default function App() {
   };
 
   const downloadFile = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: "text/plain" });
+    const mime = filename.endsWith(".ts") ? "text/plain" : "text/plain";
+    const blob = new Blob([content], { type: mime });
+    const safeFilename = filename.replace(/\//g, "_") + ".txt";
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = filename;
+    a.download = safeFilename;
     a.click();
     URL.revokeObjectURL(url);
   };
