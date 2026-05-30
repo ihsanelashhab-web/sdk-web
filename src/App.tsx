@@ -77,16 +77,24 @@ export default function App() {
         <span style={{ fontWeight: 700, fontSize: "18px" }}>SDKCraft</span>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "12px" }}>
   
+<a
     href="https://github.com/ihsanelashhab-web/api-to-sdk/issues/new"
     target="_blank"
     rel="noreferrer"
     style={{
-      background: "#1a1a1a", color: "#aaa", padding: "6px 14px",
-      borderRadius: "8px", fontSize: "13px", textDecoration: "none",
-      border: "1px solid #333"
+      background: "#1a1a1a",
+      color: "#aaa",
+      padding: "6px 14px",
+      borderRadius: "8px",
+      fontSize: "13px",
+      textDecoration: "none",
+      border: "1px solid #333",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px"
     }}
   >
-    🐛 Report a Bug
+    <span>🐛</span> Report a Bug
   </a>
   <span style={{
     background: "#16a34a22", color: "#22c55e",
