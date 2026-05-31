@@ -5,6 +5,7 @@ import "prismjs/components/prism-python";
 import "prismjs/components/prism-go";
 import "prismjs/themes/prism-tomorrow.css";
 import Landing from "./Landing";
+import Pricing from "./Pricing";
 import { supabase } from "./supabase";
 
 interface SDKResult {
@@ -16,6 +17,7 @@ interface SDKResult {
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
+  const [showPricing, setShowPricing] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
   const [langs, setLangs] = useState<string[]>(["typescript"]);
@@ -50,9 +52,10 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  if (showPricing) return <Pricing onStart={() => { setShowPricing(false); setShowLanding(false); }} />;
   if (showLanding) return <Landing onStart={() => setShowLanding(false)} user={user} onLogin={async () => {
     await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: 'http://localhost:3000' } });
-  }} onLogout={async () => { await supabase.auth.signOut(); }} />;
+  }} onLogout={async () => { await supabase.auth.signOut(); }} onPricing={() => setShowPricing(true)} />;
 
   const handleGenerate = async () => {
     if (!file) return alert("Please upload an OpenAPI file first!");

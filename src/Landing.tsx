@@ -12,7 +12,7 @@ const steps = [
   { n: "03", title: "Download your SDK", desc: "Get clean, typed, ready-to-use code" },
 ];
 
-export default function Landing({ onStart, user, onLogin, onLogout }: { onStart: () => void, user: any, onLogin: () => void, onLogout: () => void }) {
+export default function Landing({ onStart, user, onLogin, onLogout, onPricing }: { onStart: () => void, user: any, onLogin: () => void, onLogout: () => void, onPricing: () => void }) {
   return (
     <div style={{ background: "#000", color: "#fff", minHeight: "100vh", fontFamily: "system-ui, sans-serif" }}>
 
@@ -24,6 +24,7 @@ export default function Landing({ onStart, user, onLogin, onLogout }: { onStart:
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <a href="https://github.com/ihsanelashhab-web/api-to-sdk" target="_blank" rel="noreferrer" style={{ color: "#888", fontSize: "14px", textDecoration: "none" }}>GitHub</a>
+          <button onClick={onPricing} style={{ background: "none", border: "none", color: "#888", fontSize: "14px", cursor: "pointer" }}>Pricing</button>
           <a href="https://github.com/ihsanelashhab-web/api-to-sdk/issues/new" target="_blank" rel="noreferrer" style={{ color: "#888", fontSize: "14px", textDecoration: "none" }}>🐛 Report a Bug</a>
           {user ? (
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
