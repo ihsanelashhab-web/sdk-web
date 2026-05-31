@@ -164,7 +164,28 @@ export default function App() {
             transition: "all 0.2s"
           }}>
             <input type="file" accept=".json,.yaml,.yml" style={{ display: "none" }}
-              onChange={e => { setFile(e.target.files?.[0] || null); setResult(null); }} />
+              onChange={async e => {
+                const selectedFile = e.target.files?.[0] || null;
+                if (selectedFile) {
+                  const text = await selectedFile.text();
+                  let parsed: any;
+                  try {
+                    parsed = (selectedFile.name.endsWith(".json")) ? JSON.parse(text) : text;
+                  } catch {
+                    parsed = text;
+                  }
+                  const isValid = typeof parsed === "string"
+                    ? parsed.includes("openapi:") || parsed.includes("swagger:")
+                    : parsed.openapi || parsed.swagger;
+                  if (!isValid) {
+                    setError("This file doesn't look like an OpenAPI spec. Make sure it contains 'openapi' or 'swagger' field.");
+                    return;
+                  }
+                  setError(null);
+                }
+                setFile(selectedFile);
+                setResult(null);
+              }} />
             <span style={{ fontSize: "32px", marginBottom: "12px" }}>⬆️</span>
             <span style={{ fontWeight: 600 }}>
               {file ? `✅ ${file.name}` : "Drop your OpenAPI file here"}
