@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 
 const features = [
   { icon: "⚡", title: "One-click generation", desc: "Upload your OpenAPI spec and get a production-ready SDK in seconds." },
