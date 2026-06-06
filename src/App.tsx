@@ -114,7 +114,8 @@ const exportToGitHub = async () => {
   }
 
   const token = session.provider_token;
-  const repoName = `${result.title.toLowerCase().replace(/\s+/g, '-')}-sdk`;
+  const timestamp = Date.now();
+  const repoName = `${result.title.toLowerCase().replace(/\s+/g, '-')}-sdk-${timestamp}`;
 
   try {
     const createRes = await fetch('https://api.github.com/user/repos', {
