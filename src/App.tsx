@@ -100,8 +100,6 @@ const exportToGitHub = async () => {
   if (!result) return alert("Generate an SDK first!");
   
   const { data: { session } } = await supabase.auth.getSession();
-  console.log("Session:", session);
-  console.log("Provider token:", session?.provider_token);
   if (!session?.provider_token) {
     await supabase.auth.signInWithOAuth({
       provider: 'github',
