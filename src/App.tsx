@@ -103,7 +103,7 @@ export default function App() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("http://localhost:4000/generate-docs", {
+      const res = await fetch("https://api-to-sdk-production.up.railway.app/generate-docs", {
         method: "POST",
         body: formData,
       });
