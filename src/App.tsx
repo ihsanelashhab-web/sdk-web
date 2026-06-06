@@ -5,6 +5,7 @@ import "prismjs/components/prism-python";
 import "prismjs/components/prism-go";
 import "prismjs/themes/prism-tomorrow.css";
 import Landing from "./Landing";
+import ReactMarkdown from "react-markdown";
 import Pricing from "./Pricing";
 import { supabase } from "./supabase";
 
@@ -305,9 +306,9 @@ export default function App() {
             <pre style={{
               background: "#1a1a1a", borderRadius: "8px", padding: "16px",
               overflowX: "auto", fontSize: "12px", maxHeight: "500px",
-              overflowY: "auto", color: "#ccc", whiteSpace: "pre-wrap"
+              overflowY: "auto", color: "var(--color-text-primary)"
             }}>
-              {docsResult}
+              <ReactMarkdown>{docsResult}</ReactMarkdown>
             </pre>
             <button onClick={() => {
               const blob = new Blob([docsResult], { type: "text/markdown" });
