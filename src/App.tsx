@@ -275,13 +275,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* Generate Button */}
-        <button onClick={handleGenerate} disabled={generating} style={{
-          width: "100%", padding: "16px", borderRadius: "12px", border: "none",
-          background: generating ? "#1a1a1a" : "#22c55e", color: generating ? "#666" : "#000",
-          fontWeight: 700, fontSize: "16px", cursor: generating ? "not-allowed" : "pointer",
-          transition: "all 0.2s"
-        }}>
+        {/* Generate Buttons */}
+        <div style={{ display: "flex", gap: "12px" }}>
+          <button onClick={handleGenerate} disabled={generating} style={{
+            flex: 1, padding: "16px", borderRadius: "12px", border: "none",
+            background: generating ? "#1a1a1a" : "#22c55e", color: generating ? "#666" : "#000",
+            fontWeight: 700, fontSize: "16px", cursor: generating ? "not-allowed" : "pointer",
+          }}>
+            {generating ? "⚡ Generating..." : "⚡ Generate SDK"}
           </button>
           <button onClick={handleGenerateDocs} disabled={generatingDocs} style={{
             flex: 1, padding: "16px", borderRadius: "12px", border: "1px solid #3b82f6",
@@ -289,7 +290,8 @@ export default function App() {
             fontWeight: 700, fontSize: "16px", cursor: generatingDocs ? "not-allowed" : "pointer",
           }}>
             {generatingDocs ? "📄 Generating..." : "📄 Generate AI Docs"}
-        </button>
+          </button>
+        </div>
 
         {/* AI Docs Result */}
         {docsResult && (
@@ -351,7 +353,9 @@ export default function App() {
                     padding: "8px 12px", borderRadius: "8px 0 0 8px", border: "1px solid #22c55e44",
                     background: previewFile?.name === filename ? "#22c55e22" : "#111",
                     color: "#22c55e", cursor: "pointer", fontSize: "13px"
-                  }}>👁️ {filename}</button>
+                  }}>
+                    {previewFile?.name === filename ? "▲ Hide" : "👁 Preview"} {filename}
+                  </button>
                   <button onClick={() => downloadFile(filename, content as string)} style={{
                     padding: "8px 12px", borderRadius: "0 8px 8px 0", border: "1px solid #22c55e44",
                     borderLeft: "none", background: "#111", color: "#22c55e", cursor: "pointer", fontSize: "13px"
