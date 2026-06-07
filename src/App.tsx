@@ -30,7 +30,9 @@ export default function App() {
   const [generatingDocs, setGeneratingDocs] = useState(false);
   const [docsResult, setDocsResult] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<{name: string, content: string} | null>(null);
-
+const [batchFiles, setBatchFiles] = useState<File[]>([]);
+const [batchResults, setBatchResults] = useState<any[]>([]);
+const [generatingBatch, setGeneratingBatch] = useState(false);
   const allLangs = [
     { id: "typescript", label: "TypeScript", short: "TS" },
     { id: "python", label: "Python", short: "PY" },
@@ -174,6 +176,26 @@ const exportToGitHub = async () => {
       setGeneratingDocs(false);
     }
   };
+  const handleBatchGenerate = async () => {
+  if (batchFiles.length === 0) return alert("Please upload at least one file!");
+  setGeneratingBatch(true);
+  setBatchResults([]);
+  try {
+    const formData = new FormData();
+    batchFiles.forEach(f => formData.append("files", f));
+    formData.append("langs", JSON.stringify(langs));
+    const res = await fetch("https://api-to-sdk-production.up.railway.app/generate-batch", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    setBatchResults(data.results || []);
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setGeneratingBatch(false);
+  }
+};
 
   const downloadFile = (filename: string, content: string) => {
     const mime = filename.endsWith(".ts") ? "text/plain" : "text/plain";
