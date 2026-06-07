@@ -482,6 +482,56 @@ const exportToGitHub = async () => {
           </div>
         )}
       </div>
+      {/* Batch Upload */}
+<div style={{ marginTop: "32px", background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
+  <div style={{ fontWeight: 600, marginBottom: "16px", fontSize: "16px" }}>📦 Batch Upload — Multiple APIs at once</div>
+  <label style={{
+    display: "flex", alignItems: "center", justifyContent: "center",
+    border: "2px dashed #333", borderRadius: "8px", padding: "24px",
+    cursor: "pointer", background: "#0a0a0a", marginBottom: "12px"
+  }}>
+    <input type="file" accept=".json,.yaml,.yml" multiple style={{ display: "none" }}
+      onChange={e => setBatchFiles(Array.from(e.target.files || []))} />
+    <span>📂 {batchFiles.length > 0 ? `${batchFiles.length} files selected` : "Select multiple OpenAPI files"}</span>
+  </label>
+  <button onClick={handleBatchGenerate} disabled={generatingBatch} style={{
+    width: "100%", padding: "12px", borderRadius: "8px", border: "none",
+    background: generatingBatch ? "#1a1a1a" : "#7c3aed", color: generatingBatch ? "#666" : "#fff",
+    fontWeight: 700, fontSize: "15px", cursor: generatingBatch ? "not-allowed" : "pointer"
+  }}>
+    {generatingBatch ? "⚡ Processing..." : "📦 Generate All SDKs"}
+  </button>
+  {batchResults.length > 0 && (
+    <div style={{ marginTop: "16px" }}>
+      {batchResults.map((r, i) => (
+        <div key={i} style={{
+          padding: "12px", borderRadius: "8px", marginBottom: "8px",
+          background: r.success ? "#0f1f0f" : "#1f0f0f",
+          border: `1px solid ${r.success ? "#22c55e33" : "#ef444433"}`
+        }}>
+          <div style={{ fontWeight: 600, color: r.success ? "#22c55e" : "#ef4444" }}>
+            {r.success ? "✅" : "❌"} {r.filename}
+          </div>
+          {r.success && (
+            <div style={{ color: "#888", fontSize: "13px", marginTop: "4px" }}>
+              {r.title} v{r.version} • {r.endpoints} endpoints
+            </div>
+          )}
+          {r.success && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
+              {Object.entries(r.files).map(([filename, content]) => (
+                <button key={filename} onClick={() => downloadFile(filename, content as string)} style={{
+                  padding: "4px 10px", borderRadius: "6px", border: "1px solid #22c55e44",
+                  background: "#111", color: "#22c55e", cursor: "pointer", fontSize: "12px"
+                }}>⬇️ {filename}</button>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
     </div>
   );
 }
