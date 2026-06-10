@@ -33,6 +33,10 @@ export default function App() {
 const [batchFiles, setBatchFiles] = useState<File[]>([]);
 const [batchResults, setBatchResults] = useState<any[]>([]);
 const [generatingBatch, setGeneratingBatch] = useState(false);
+const [oldFile, setOldFile] = useState<File | null>(null);
+const [newFile, setNewFile] = useState<File | null>(null);
+const [changeReport, setChangeReport] = useState<any>(null);
+const [detectingChanges, setDetectingChanges] = useState(false);
   const allLangs = [
     { id: "typescript", label: "TypeScript", short: "TS" },
     { id: "python", label: "Python", short: "PY" },
@@ -196,7 +200,27 @@ const exportToGitHub = async () => {
     setGeneratingBatch(false);
   }
 };
-
+const handleDetectChanges = async () => {
+  if (!oldFile || !newFile) return alert("Please upload both files!");
+  setDetectingChanges(true);
+  setChangeReport(null);
+  try {
+    const formData = new FormData();
+    formData.append("oldFile", oldFile);
+    formData.append("newFile", newFile);
+    const res = await fetch("https://api-to-sdk-production.up.railway.app/detect-changes", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    setChangeReport(data.report);
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setDetectingChanges(false);
+  }
+};
   const downloadFile = (filename: string, content: string) => {
     const mime = filename.endsWith(".ts") ? "text/plain" : "text/plain";
     const blob = new Blob([content], { type: mime });
@@ -529,6 +553,52 @@ const exportToGitHub = async () => {
           )}
         </div>
       ))}
+    </div>
+  )}
+</div>
+{/* API Change Detection */}
+<div style={{ marginTop: "32px", background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
+  <div style={{ fontWeight: 600, marginBottom: "16px", fontSize: "16px" }}>🔍 API Change Detection</div>
+  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+    <label style={{ border: "2px dashed #333", borderRadius: "8px", padding: "16px", cursor: "pointer", background: "#0a0a0a", textAlign: "center" as const }}>
+      <input type="file" accept=".json,.yaml,.yml" style={{ display: "none" }}
+        onChange={e => setOldFile(e.target.files?.[0] || null)} />
+      <div>📄 {oldFile ? `✅ ${oldFile.name}` : "Old API Version"}</div>
+    </label>
+    <label style={{ border: "2px dashed #333", borderRadius: "8px", padding: "16px", cursor: "pointer", background: "#0a0a0a", textAlign: "center" as const }}>
+      <input type="file" accept=".json,.yaml,.yml" style={{ display: "none" }}
+        onChange={e => setNewFile(e.target.files?.[0] || null)} />
+      <div>📄 {newFile ? `✅ ${newFile.name}` : "New API Version"}</div>
+    </label>
+  </div>
+  <button onClick={handleDetectChanges} disabled={detectingChanges} style={{
+    width: "100%", padding: "12px", borderRadius: "8px", border: "none",
+    background: detectingChanges ? "#1a1a1a" : "#0369a1", color: detectingChanges ? "#666" : "#fff",
+    fontWeight: 700, fontSize: "15px", cursor: detectingChanges ? "not-allowed" : "pointer"
+  }}>
+    {detectingChanges ? "🔍 Detecting..." : "🔍 Detect Changes"}
+  </button>
+  {changeReport && (
+    <div style={{ marginTop: "16px" }}>
+      <div style={{ background: "#0a0a0a", borderRadius: "8px", padding: "16px", marginBottom: "12px", color: "#aaa", fontSize: "14px", whiteSpace: "pre-line" as const }}>
+        {changeReport.summary}
+      </div>
+      {changeReport.breakingChanges.length > 0 && (
+        <div style={{ background: "#1f0f0f", border: "1px solid #ef444433", borderRadius: "8px", padding: "12px" }}>
+          <div style={{ color: "#ef4444", fontWeight: 600, marginBottom: "8px" }}>🚨 Breaking Changes</div>
+          {changeReport.breakingChanges.map((c: string, i: number) => (
+            <div key={i} style={{ color: "#fca5a5", fontSize: "13px", marginBottom: "4px" }}>{c}</div>
+          ))}
+        </div>
+      )}
+      {changeReport.newEndpoints.length > 0 && (
+        <div style={{ background: "#0f1f0f", border: "1px solid #22c55e33", borderRadius: "8px", padding: "12px", marginTop: "8px" }}>
+          <div style={{ color: "#22c55e", fontWeight: 600, marginBottom: "8px" }}>✅ New Endpoints</div>
+          {changeReport.newEndpoints.map((e: any, i: number) => (
+            <div key={i} style={{ color: "#86efac", fontSize: "13px", marginBottom: "4px" }}>{e.method} {e.route}</div>
+          ))}
+        </div>
+      )}
     </div>
   )}
 </div>
