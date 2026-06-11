@@ -51,7 +51,7 @@ export default function Pricing({ onStart }: { onStart: () => void }) {
 
         {/* Pro */}
         <div style={{ background: '#0a0a0a', border: '1px solid #22c55e44', borderRadius: '16px', padding: '32px', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#22c55e', color: '#000', fontSize: '12px', fontWeight: 700, padding: '4px 14px', borderRadius: '999px' }}>MOST RECOMENDED</div>
+          <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#22c55e', color: '#000', fontSize: '12px', fontWeight: 700, padding: '4px 14px', borderRadius: '999px' }}>RECOMENDED</div>
           <div style={{ fontSize: '14px', color: '#22c55e', marginBottom: '12px', fontWeight: 600 }}>PRO</div>
           <div style={{ fontSize: '48px', fontWeight: 800, marginBottom: '4px' }}>$49</div>
           <div style={{ color: '#555', fontSize: '14px', marginBottom: '32px' }}>per month</div>
