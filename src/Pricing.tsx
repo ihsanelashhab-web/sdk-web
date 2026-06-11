@@ -88,4 +88,42 @@ export default function Pricing({ onStart }: { onStart: () => void }) {
             'SLA 99.9% uptime',
             'Dedicated support',
           ].map(f => (
-            <div
+            <div key={f} style={{ display: 'flex', gap: '10px', marginBottom: '12px', fontSize: '14px', color: '#aaa' }}>
+              <span style={{ color: '#7c3aed' }}>✓</span> {f}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Waitlist */}
+      <section style={{ maxWidth: '600px', margin: '0 auto', padding: '0 24px 100px', textAlign: 'center' }}>
+        <div style={{ background: '#0a0a0a', border: '1px solid #22c55e33', borderRadius: '16px', padding: '40px' }}>
+          <div style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>🚀 Join the Pro Waitlist</div>
+          <div style={{ color: '#888', marginBottom: '24px' }}>Be the first to know when Pro launches. Get 30% off for early adopters.</div>
+          {joined ? (
+            <div style={{ color: '#22c55e', fontWeight: 700, fontSize: '18px' }}>✅ You're on the list! We'll notify you soon.</div>
+          ) : (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', fontSize: '14px' }}
+              />
+              <button onClick={handleWaitlist} style={{ padding: '12px 20px', borderRadius: '8px', background: '#22c55e', color: '#000', border: 'none', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' as const }}>
+                Join Waitlist
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ borderTop: '1px solid #111', padding: '24px 40px', display: 'flex', justifyContent: 'space-between', color: '#555', fontSize: '13px' }}>
+        <span>SDKCraft © 2025</span>
+        <a href='https://github.com/ihsanelashhab-web/api-to-sdk' target='_blank' rel='noreferrer' style={{ color: '#555', textDecoration: 'none' }}>GitHub</a>
+      </footer>
+    </div>
+  );
+}
