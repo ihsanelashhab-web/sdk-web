@@ -276,7 +276,7 @@ const handleDetectChanges = async () => {
       {/* Main */}
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 24px" }}>
         <h1 style={{ fontSize: "40px", fontWeight: 800, textAlign: "center", marginBottom: "8px" }}>
-          SDKCraft — AI-Ready SDK Generation
+          SDKCraft — The Complete API Developer Platform
         </h1>
         <p style={{ textAlign: "center", color: "#888", marginBottom: "48px" }}>
           Transform your OpenAPI specifications into production-ready SDKs with a single click.
