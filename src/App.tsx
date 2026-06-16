@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Prism from "prismjs";
+import JSZip from "jszip";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-python";
 import "prismjs/components/prism-go";
@@ -65,6 +66,20 @@ const [detectingChanges, setDetectingChanges] = useState(false);
   if (showLanding) return <Landing onStart={() => setShowLanding(false)} user={user} onLogin={async () => {
     await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: 'http://localhost:3000' } });
   }} onLogout={async () => { await supabase.auth.signOut(); }} onPricing={() => setShowPricing(true)} />;
+
+  const downloadZip = async (files: Record<string, string>, title: string) => {
+    const zip = new JSZip();
+    Object.entries(files).forEach(([filename, fileContent]) => {
+      zip.file(filename, fileContent as string);
+    });
+    const blob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title.replace(/\s+/g, "-").toLowerCase()}-sdk.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleGenerate = async () => {
     if (!file) return alert("Please upload an OpenAPI file first!");
@@ -481,6 +496,13 @@ const handleDetectChanges = async () => {
                 </div>
               ))}
             </div>
+            <button onClick={() => downloadZip(result.files, result.title)} style={{
+              width: "100%", padding: "10px", borderRadius: "8px",
+              background: "#22c55e", color: "#000", border: "none",
+              fontWeight: 700, fontSize: "14px", cursor: "pointer", marginBottom: "16px"
+            }}>
+              📦 Download All as ZIP
+            </button>
             {previewFile && (
               <div style={{ marginTop: "8px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
