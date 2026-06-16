@@ -70,7 +70,8 @@ const [detectingChanges, setDetectingChanges] = useState(false);
   const downloadZip = async (files: Record<string, string>, title: string) => {
     const zip = new JSZip();
     Object.entries(files).forEach(([filename, fileContent]) => {
-      zip.file(filename, fileContent as string);
+      const safeName = filename.replace(/\.ts$/, ".ts.txt").replace(/\.py$/, ".py.txt").replace(/\.go$/, ".go.txt").replace(/\.dart$/, ".dart.txt").replace(/\.java$/, ".java.txt");
+      zip.file(safeName, fileContent as string);
     });
     const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
