@@ -9,7 +9,7 @@ import Landing from "./Landing";
 import ReactMarkdown from "react-markdown";
 import Pricing from "./Pricing";
 import { supabase } from "./supabase";
-
+import { saveSDKHistory, getSDKHistory, deleteSDKHistory } from "./lib/sdkHistory";
 interface SDKResult {
   title: string;
   version: string;
@@ -37,6 +37,8 @@ const [generatingBatch, setGeneratingBatch] = useState(false);
 const [oldFile, setOldFile] = useState<File | null>(null);
 const [newFile, setNewFile] = useState<File | null>(null);
 const [changeReport, setChangeReport] = useState<any>(null);
+const [history, setHistory] = useState<any[]>([]);
+const [showHistory, setShowHistory] = useState(false);
 const [detectingChanges, setDetectingChanges] = useState(false);
   const allLangs = [
     { id: "typescript", label: "TypeScript", short: "TS" },
@@ -61,6 +63,12 @@ const [detectingChanges, setDetectingChanges] = useState(false);
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      getSDKHistory().then(setHistory).catch(console.error);
+    }
+  }, [user]);
 
   if (showPricing) return <Pricing onStart={() => { setShowPricing(false); setShowLanding(false); }} />;
   if (showLanding) return <Landing onStart={() => setShowLanding(false)} user={user} onLogin={async () => {
@@ -105,6 +113,15 @@ const [detectingChanges, setDetectingChanges] = useState(false);
       if (!res.ok) throw new Error(data.error || "Generation failed");
 
       setResult(data);
+      setResult(data);
+await saveSDKHistory({
+  title: data.title,
+  version: data.version,
+  endpoints: data.endpoints,
+  files: data.files,
+  languages: langs,
+});
+getSDKHistory().then(setHistory).catch(console.error);
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error("Unknown error");
       if (error.message === "Failed to fetch") {
@@ -529,6 +546,64 @@ const handleDetectChanges = async () => {
           </div>
         )}
       </div>
+      {/* History Button */}
+{user && (
+  <div style={{ marginTop: "24px", textAlign: "center" }}>
+    <button onClick={() => setShowHistory(!showHistory)} style={{
+      padding: "10px 24px", borderRadius: "10px",
+      border: "1px solid #333", background: "#111",
+      color: "#aaa", cursor: "pointer", fontWeight: 600
+    }}>
+      🕓 {showHistory ? "Hide" : "Show"} SDK History ({history.length})
+    </button>
+  </div>
+)}
+
+{/* History Panel */}
+{showHistory && (
+  <div style={{
+    marginTop: "16px", background: "#111",
+    border: "1px solid #222", borderRadius: "12px", padding: "20px"
+  }}>
+    <div style={{ fontWeight: 700, fontSize: "16px", marginBottom: "16px" }}>🕓 SDK History</div>
+    {history.length === 0 ? (
+      <p style={{ color: "#555", textAlign: "center" }}>No history yet. Generate your first SDK!</p>
+    ) : (
+      history.map((item) => (
+        <div key={item.id} style={{
+          padding: "14px", borderRadius: "10px", marginBottom: "10px",
+          background: "#0a0a0a", border: "1px solid #1f1f1f",
+          display: "flex", justifyContent: "space-between", alignItems: "center"
+        }}>
+          <div>
+            <div style={{ fontWeight: 600, color: "#22c55e" }}>{item.title}</div>
+            <div style={{ color: "#666", fontSize: "13px", marginTop: "4px" }}>
+              v{item.version} • {item.endpoints} endpoints • {item.languages?.join(", ")}
+            </div>
+            <div style={{ color: "#444", fontSize: "12px", marginTop: "2px" }}>
+              {new Date(item.created_at).toLocaleDateString()}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button onClick={() => setResult(item)} style={{
+              padding: "6px 14px", borderRadius: "8px",
+              border: "1px solid #22c55e44", background: "transparent",
+              color: "#22c55e", cursor: "pointer", fontSize: "13px"
+            }}>↩ Restore</button>
+            <button onClick={async () => {
+              await deleteSDKHistory(item.id);
+              setHistory(prev => prev.filter(h => h.id !== item.id));
+            }} style={{
+              padding: "6px 14px", borderRadius: "8px",
+              border: "1px solid #ef444433", background: "transparent",
+              color: "#ef4444", cursor: "pointer", fontSize: "13px"
+            }}>🗑 Delete</button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+)}
       {/* Batch Upload */}
 <div style={{ marginTop: "32px", background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
   <div style={{ fontWeight: 600, marginBottom: "16px", fontSize: "16px" }}>📦 Batch Upload — Multiple APIs at once</div>
