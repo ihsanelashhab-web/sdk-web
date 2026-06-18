@@ -113,7 +113,6 @@ const [detectingChanges, setDetectingChanges] = useState(false);
       if (!res.ok) throw new Error(data.error || "Generation failed");
 
       setResult(data);
-      setResult(data);
 await saveSDKHistory({
   title: data.title,
   version: data.version,
