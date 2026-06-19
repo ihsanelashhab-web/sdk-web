@@ -8,9 +8,13 @@ export async function saveSDKHistory(result: {
   languages: string[];
 }) {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  console.log("Current user:", user);
+  if (!user) {
+    console.log("Not logged in, skipping save");
+    return;
+  }
 
-  await supabase.from('sdk_history').insert({
+  const { data, error } = await supabase.from('sdk_history').insert({
     user_id: user.id,
     title: result.title,
     version: result.version,
@@ -18,6 +22,8 @@ export async function saveSDKHistory(result: {
     languages: result.languages,
     files: result.files,
   });
+
+  console.log("Save result:", data, "Error:", error);
 }
 
 export async function getSDKHistory() {
