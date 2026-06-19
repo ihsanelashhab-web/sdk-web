@@ -23,7 +23,6 @@ export async function saveSDKHistory(result: {
     files: result.files,
   });
 
-  console.log("Save result:", data, "Error:", error);
 }
 
 export async function getSDKHistory() {
