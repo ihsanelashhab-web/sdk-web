@@ -1,4 +1,4 @@
-import { supabase } from '../supabase';
+import { supabase } from "../supabase";
 
 export async function saveSDKHistory(result: {
   title: string;
@@ -8,13 +8,12 @@ export async function saveSDKHistory(result: {
   languages: string[];
 }) {
   const { data: { user } } = await supabase.auth.getUser();
-  console.log("Current user:", user);
+
   if (!user) {
-    console.log("Not logged in, skipping save");
     return;
   }
 
-  const { data, error } = await supabase.from('sdk_history').insert({
+  const { error } = await supabase.from("sdk_history").insert({
     user_id: user.id,
     title: result.title,
     version: result.version,
@@ -23,17 +22,45 @@ export async function saveSDKHistory(result: {
     files: result.files,
   });
 
+  if (error) {
+    throw error;
+  }
 }
 
 export async function getSDKHistory() {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
   const { data, error } = await supabase
-    .from('sdk_history')
-    .select('*')
-    .order('created_at', { ascending: false });
-  if (error) throw error;
+    .from("sdk_history")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
   return data ?? [];
 }
 
 export async function deleteSDKHistory(id: string) {
-  await supabase.from('sdk_history').delete().eq('id', id);
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("sdk_history")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    throw error;
+  }
 }

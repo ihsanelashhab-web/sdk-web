@@ -1,46 +1,75 @@
-# Getting Started with Create React App
+# SDKCraft Web
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+SDKCraft is a developer-facing web app for turning OpenAPI specs into SDKs, starter documentation, and API change reports.
 
-## Available Scripts
+## What It Does
 
-In the project directory, you can run:
+- Generate SDK files from OpenAPI JSON or YAML.
+- Support TypeScript, Python, Dart, Go, and Java targets.
+- Preview generated files in the browser.
+- Download a complete SDK ZIP.
+- Generate starter API documentation.
+- Compare two API versions for breaking changes.
+- Optionally sign in with GitHub for SDK history and GitHub export.
 
-### `npm start`
+## Local Setup
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Install dependencies:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+npm install
+```
 
-### `npm test`
+Create `.env`:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+REACT_APP_SUPABASE_URL=your_supabase_project_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+REACT_APP_API_BASE_URL=https://api-to-sdk-production.up.railway.app
+```
 
-### `npm run build`
+Start the app:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm start
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Build for production:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm run build
+```
 
-### `npm run eject`
+## Product Hunt Launch Notes
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Recommended Product Hunt name:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```text
+SDKCraft
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Recommended tagline:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```text
+Turn OpenAPI specs into production-ready SDKs
+```
 
-## Learn More
+Recommended positioning:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```text
+SDKCraft helps API teams turn OpenAPI specs into production-ready SDKs, starter docs, and API change reports from one browser-based workflow.
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Environment
+
+The app reads Supabase credentials from environment variables. Do not hard-code keys in `src/supabase.ts`.
+
+`REACT_APP_API_BASE_URL` is optional. If it is not set, the app uses the current Railway backend URL.
+
+## Deployment Checklist
+
+- Configure Supabase OAuth redirect URLs for the deployed domain.
+- Set Vercel environment variables for Supabase and backend URL.
+- Confirm the main generation flow works without signup.
+- Confirm GitHub sign-in works on the production domain.
+- Run `npm run build` before publishing launch screenshots.
