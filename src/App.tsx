@@ -411,7 +411,10 @@ if (file) {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, system-ui, sans-serif" }}>
       <header style={{ borderBottom: "1px solid #1f1f1f", padding: "16px 32px", display: "flex", alignItems: "center", gap: "10px" }}>
         <span style={{ color: "#22c55e", fontSize: "20px" }}>&lt;/&gt;</span>
-        <span style={{ fontWeight: 700, fontSize: "18px" }}>SDKCraft</span>
+        <span 
+  style={{ fontWeight: 700, fontSize: "18px", cursor: "pointer" }}
+  onClick={() => setShowLanding(true)}
+>SDKCraft</span>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           <a
             href="https://github.com/ihsanelashhab-web/api-to-sdk/issues/new"
