@@ -149,8 +149,8 @@ export default function Pricing({ onStart }: { onStart: () => void }) {
       {/* Waitlist */}
       <section style={{ maxWidth: "600px", margin: "0 auto", padding: "0 24px 100px", textAlign: "center" }}>
         <div style={{ background: "#0a0a0a", border: "1px solid #22c55e33", borderRadius: "16px", padding: "40px" }}>
-          <div style={{ fontSize: "24px", fontWeight: 700, marginBottom: "8px" }}>🚀 Join the Pro Waitlist</div>
-          <div style={{ color: "#888", marginBottom: "24px" }}>Be first when Pro launches. Early adopters get <strong style={{ color: "#22c55e" }}>30% off</strong> forever.</div>
+          <div style={{ fontSize: "24px", fontWeight: 700, marginBottom: "8px" }}> Join the Pro Waitlist</div>
+          <div style={{ color: "#888", marginBottom: "24px" }}>Be first when Pro launches. Early adopters get <strong style={{ color: "#22c55e" }}>30% off</strong>.</div>
           {joined ? (
             <div style={{ color: "#22c55e", fontWeight: 700, fontSize: "18px" }}>✅ You're on the list! We'll notify you soon.</div>
           ) : (
