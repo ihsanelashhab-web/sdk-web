@@ -36,6 +36,7 @@ const allLangs = [
   { id: "go", label: "Go", short: "GO" },
   { id: "java", label: "Java", short: "JV" },
   { id: "kotlin", label: "Kotlin", short: "KT" },
+  { id: "csharp", label: "C#", short: "C#" },
   { id: "swift", label: "Swift", short: "SW" },
 ];
 
