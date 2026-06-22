@@ -78,6 +78,8 @@ export default function App() {
 const [showPricingModal, setShowPricingModal] = useState<boolean>(false);
 const [freeBatchAttempts, setFreeBatchAttempts] = useState<number>(0); // عداد محاولات الرفع الجماعي للمستخدم المجاني
   const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+const [freeDiffAttempts, setFreeDiffAttempts] = useState<number>(0); // 👈 أضف هذا السطر هنا فقط
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<SDKResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -344,6 +346,13 @@ if (file) {
   };
 
   const handleDetectChanges = async () => {
+    if (!isPro && freeDiffAttempts >= 1) {
+      setShowPricingModal(true);
+      return;
+    }
+    if (!isPro) {
+      setFreeDiffAttempts(prev => prev + 1);
+    }
     if (!oldFile || !newFile) {
       setError("Upload both the old and new OpenAPI files.");
       return;
@@ -773,7 +782,7 @@ if (file) {
             </label>
           </div>
          <button 
-  onClick={() => isPro ? handleDetectChanges() : setShowPricingModal(true)} 
+ onClick={() => handleDetectChanges()}
   disabled={detectingChanges} 
   style={{ 
     width: "100%", 
