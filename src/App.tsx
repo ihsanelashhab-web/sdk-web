@@ -425,7 +425,8 @@ if (file) {
     }
   };
 
-  return (
+  return ( <>
+    {showPricingModal && (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, system-ui, sans-serif" }}>
       <header style={{ borderBottom: "1px solid #1f1f1f", padding: "16px 32px", display: "flex", alignItems: "center", gap: "10px" }}>
         <span style={{ color: "#22c55e", fontSize: "20px" }}>&lt;/&gt;</span>
@@ -693,5 +694,6 @@ if (file) {
         </section>
       </main>
     </div>
+  </>
   );
 }
