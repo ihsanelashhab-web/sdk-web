@@ -83,6 +83,12 @@ export default function App() {
   const [batchFiles, setBatchFiles] = useState<File[]>([]);
   const [batchResults, setBatchResults] = useState<any[]>([]);
   const [generatingBatch, setGeneratingBatch] = useState(false);
+  const [isPro, setIsPro] = useState<boolean>(false);
+const [showPricingModal, setShowPricingModal] = useState<boolean>(false);
+const [freeGenerations, setFreeGenerations] = useState<number>(0);
+const [freeDocs, setFreeDocs] = useState<number>(0);
+const [freeDiff, setFreeDiff] = useState<number>(0);
+const [freeBatch, setFreeBatch] = useState<number>(0);
   const [oldFile, setOldFile] = useState<File | null>(null);
   const [newFile, setNewFile] = useState<File | null>(null);
   const [changeReport, setChangeReport] = useState<any>(null);
@@ -204,6 +210,8 @@ export default function App() {
   };
 
   const handleGenerate = async () => {
+    if (!isPro && freeGenerations >= 3) { setShowPricingModal(true); return; }
+    if (!isPro) setFreeGenerations(prev => prev + 1);
     if (!file) {
       setError("Upload an OpenAPI file first.");
       return;
@@ -263,7 +271,9 @@ if (file) {
   };
 
   const handleGenerateDocs = async () => {
-    if (!file) {
+     if (!isPro && freeDocs >= 1) { setShowPricingModal(true); return; }
+     if (!isPro) setFreeDocs(prev => prev + 1);
+     if (!file) {
       setError("Upload an OpenAPI file first.");
       return;
     }
@@ -292,6 +302,7 @@ if (file) {
 
   const handleBatchGenerate = async () => {
     if (batchFiles.length === 0) {
+      if (!isPro) { setShowPricingModal(true); return; }
       setError("Upload at least one OpenAPI file for batch generation.");
       return;
     }
@@ -321,6 +332,8 @@ if (file) {
 
   const handleDetectChanges = async () => {
     if (!oldFile || !newFile) {
+      if (!isPro && freeDiff >= 1) { setShowPricingModal(true); return; }
+      if (!isPro) setFreeDiff(prev => prev + 1);
       setError("Upload both the old and new OpenAPI files.");
       return;
     }
