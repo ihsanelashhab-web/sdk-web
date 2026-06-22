@@ -74,6 +74,10 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
   const [langs, setLangs] = useState<string[]>(["typescript"]);
+  const [isPro, setIsPro] = useState<boolean>(false); // 💡 غيرها إلى true لتجربة شكل المشترك المدفوع
+const [showPricingModal, setShowPricingModal] = useState<boolean>(false);
+const [freeBatchAttempts, setFreeBatchAttempts] = useState<number>(0); // عداد محاولات الرفع الجماعي للمستخدم المجاني
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<SDKResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -263,6 +267,14 @@ if (file) {
   };
 
   const handleGenerateDocs = async () => {
+    if (!isPro && freeDocsAttempts >= 1) {
+      setShowPricingModal(true);
+      return;
+    }
+
+    if (!isPro) {
+      setFreeDocsAttempts(prev => prev + 1);
+    }
     if (!file) {
       setError("Upload an OpenAPI file first.");
       return;
@@ -290,15 +302,27 @@ if (file) {
     }
   };
 
-  const handleBatchGenerate = async () => {
-    if (batchFiles.length === 0) {
-      setError("Upload at least one OpenAPI file for batch generation.");
-      return;
-    }
+ const handleBatchGenerate = async () => {
+  if (batchFiles.length === 0) {
+    setError("Upload at least one OpenAPI file for batch generation.");
+    return;
+  }
 
-    setGeneratingBatch(true);
-    setBatchResults([]);
-    setError(null);
+  // منع المستخدم المجاني إذا استهلك الـ 3 محاولات وإظهار نافذة الترقية
+  if (!isPro && freeBatchAttempts >= 3) {
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+    setShowPricingModal(true);
+    return;
+  }
+
+  setGeneratingBatch(true);
+  setBatchResults([]);
+  setError(null);
+
+  // خصم محاولة من العداد للمستخدم المجاني عند بدء المعالجة
+  if (!isPro) {
+    setFreeBatchAttempts(prev => prev + 1);
+  }
 
     try {
       const formData = new FormData();
@@ -484,14 +508,34 @@ if (file) {
           </div>
         </section>
 
-        <section style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <button onClick={handleGenerate} disabled={generating} style={{ flex: "1 1 260px", padding: "16px", borderRadius: "12px", border: "none", background: generating ? "#1a1a1a" : "#22c55e", color: generating ? "#666" : "#000", fontWeight: 800, fontSize: "16px", cursor: generating ? "not-allowed" : "pointer" }}>
-            {generating ? "Generating..." : "Generate SDK"}
-          </button>
-          <button onClick={handleGenerateDocs} disabled={generatingDocs} style={{ flex: "1 1 260px", padding: "16px", borderRadius: "12px", border: "1px solid #3b82f6", background: generatingDocs ? "#1a1a1a" : "#0f172a", color: generatingDocs ? "#666" : "#93c5fd", fontWeight: 800, fontSize: "16px", cursor: generatingDocs ? "not-allowed" : "pointer" }}>
-            {generatingDocs ? "Generating docs..." : "Generate AI docs"}
-          </button>
-        </section>
+     <section style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+  <button onClick={handleGenerate} disabled={generating} style={{ flex: "1 1 260px", padding: "16px", borderRadius: "12px", border: "none", background: generating ? "#1a1a1a" : "#22c55e", color: generating ? "#666" : "#000", fontWeight: 800, fontSize: "16px", cursor: generating ? "not-allowed" : "pointer" }}>
+    {generating ? "Generating..." : "Generate SDK"}
+  </button>
+  
+  <button 
+    onClick={() => isPro ? handleGenerateDocs() : setShowPricingModal(true)} 
+    disabled={generatingDocs} 
+    style={{ 
+      flex: "1 1 260px", 
+      padding: "16px", 
+      borderRadius: "12px", 
+      border: "1px solid #3b82f6", 
+      background: generatingDocs ? "#1a1a1a" : (isPro ? "#0f172a" : "#111"), 
+      color: generatingDocs ? "#666" : (isPro ? "#93c5fd" : "#666"), 
+      fontWeight: 800, 
+      fontSize: "16px", 
+      cursor: generatingDocs ? "not-allowed" : "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "8px"
+    }}
+  >
+    {generatingDocs ? "Generating docs..." : "Generate AI docs"}
+    {!isPro && <span style={{ fontSize: "14px" }}>🔒</span>}
+  </button>
+</section>
 
         {error && (
           <div style={{ marginTop: "16px", background: "#1f0f0f", border: "1px solid #ef444433", borderRadius: "12px", padding: "18px", textAlign: "center", color: "#ef4444" }}>
@@ -601,15 +645,93 @@ if (file) {
           </section>
         )}
 
-        <section style={{ marginTop: "32px", background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
+       <section style={{ marginTop: "32px", background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
           <div style={{ fontWeight: 800, marginBottom: "16px", fontSize: "16px" }}>Batch upload</div>
-          <label style={{ display: "flex", alignItems: "center", justifyContent: "center", border: "2px dashed #333", borderRadius: "8px", padding: "24px", cursor: "pointer", background: "#0a0a0a", marginBottom: "12px" }}>
-            <input type="file" accept=".json,.yaml,.yml" multiple style={{ display: "none" }} onChange={(event) => setBatchFiles(Array.from(event.target.files || []))} />
-            <span>{batchFiles.length > 0 ? `${batchFiles.length} files selected` : "Select multiple OpenAPI files"}</span>
+          <label 
+            onClick={(e) => {
+              if (!isPro && freeBatchAttempts >= 3) {
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+                e.preventDefault(); // منع فتح نافذة اختيار الملفات بعد استهلاك الـ 3 محاولات
+                setShowPricingModal(true); // إظهار نافذة الترقية فوراً
+              }
+            }}
+            style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              padding: "24px", 
+              border: "2px dashed #333", 
+              borderRadius: "8px", 
+              cursor: (isPro || freeBatchAttempts < 3) ? "pointer" : "not-allowed", 
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+              background: (isPro || freeBatchAttempts < 3) ? "#0a0a0a" : "#111",
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+              marginBottom: "12px",
+              opacity: (isPro || freeBatchAttempts < 3) ? 1 : 0.6
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+            }}
+          >
+            <span style={{ fontWeight: 600, color: (isPro || freeBatchAttempts < 3) ? "#fff" : "#555" }}>
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+              {batchFiles.length > 0 
+                ? `${batchFiles.length} files selected` 
+                : ((isPro || freeBatchAttempts < 3) ? "Select multiple OpenAPI files" : "Select multiple OpenAPI files (Pro only)")}
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+            </span>
+            
+            {(isPro || freeBatchAttempts < 3) && (
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+              <input 
+                type="file" 
+                accept=".json,.yaml,.yml" 
+                multiple 
+                style={{ display: "none" }} 
+                onChange={(event) => {
+                  setBatchFiles(Array.from(event.target.files || []));
+                  if (!isPro) {
+                    setFreeBatchAttempts(prev => prev + 1); // زيادة عداد المحاولات للمستخدم المجاني عند اختيار الملفات
+                  }
+                }} 
+              />
+            )}
           </label>
-          <button onClick={handleBatchGenerate} disabled={generatingBatch} style={{ width: "100%", padding: "12px", borderRadius: "8px", border: "none", background: generatingBatch ? "#1a1a1a" : "#7c3aed", color: generatingBatch ? "#666" : "#fff", fontWeight: 800, fontSize: "15px", cursor: generatingBatch ? "not-allowed" : "pointer" }}>
-            {generatingBatch ? "Processing..." : "Generate all SDKs"}
-          </button>
+
+          {/* نص توضيحي سفلي شفاف لإعلام المستخدم بحالة محاولاته الشهرية من دون إيموجي */}
+          <p style={{ 
+            textAlign: "center", 
+            fontSize: "12px", 
+            color: isPro ? "#22c55e" : (freeBatchAttempts < 3 ? "#3b82f6" : "#ef4444"), 
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+            marginTop: "4px",
+            marginBottom: "12px",
+            fontWeight: 600
+          }}>
+            {isPro ? "Unlimited batch access active" : `${3 - freeBatchAttempts} of 3 free monthly batch uploads remaining`}
+  const [freeDocsAttempts, setFreeDocsAttempts] = useState<number>(0);
+          </p>
+        <button 
+  onClick={() => isPro ? handleBatchGenerate() : setShowPricingModal(true)} 
+  disabled={generatingBatch} 
+  style={{ 
+    width: "100%", 
+    padding: "12px", 
+    borderRadius: "8px", 
+    border: "none", 
+    background: generatingBatch ? "#1a1a1a" : (isPro ? "#7c3aed" : "#222"), 
+    color: generatingBatch ? "#666" : (isPro ? "#fff" : "#888"), 
+    fontWeight: 800, 
+    fontSize: "15px", 
+    cursor: generatingBatch ? "not-allowed" : "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px"
+  }}
+>
+  {generatingBatch ? "Processing..." : "Generate all SDKs"}
+  {!isPro && <span>🔒</span>}
+</button>
 
           {batchResults.length > 0 && (
             <div style={{ marginTop: "16px" }}>
@@ -650,9 +772,28 @@ if (file) {
               <div>{newFile ? newFile.name : "New API version"}</div>
             </label>
           </div>
-          <button onClick={handleDetectChanges} disabled={detectingChanges} style={{ width: "100%", padding: "12px", borderRadius: "8px", border: "none", background: detectingChanges ? "#1a1a1a" : "#0369a1", color: detectingChanges ? "#666" : "#fff", fontWeight: 800, fontSize: "15px", cursor: detectingChanges ? "not-allowed" : "pointer" }}>
-            {detectingChanges ? "Detecting..." : "Detect changes"}
-          </button>
+         <button 
+  onClick={() => isPro ? handleDetectChanges() : setShowPricingModal(true)} 
+  disabled={detectingChanges} 
+  style={{ 
+    width: "100%", 
+    padding: "12px", 
+    borderRadius: "8px", 
+    border: "none", 
+    background: detectingChanges ? "#1a1a1a" : (isPro ? "#0369a1" : "#222"), 
+    color: detectingChanges ? "#666" : (isPro ? "#fff" : "#888"), 
+    fontWeight: 800, 
+    fontSize: "15px", 
+    cursor: detectingChanges ? "not-allowed" : "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px"
+  }}
+>
+  {detectingChanges ? "Detecting..." : "Detect changes"}
+  {!isPro && <span>🔒</span>}
+</button>
 
           {changeReport && (
             <div style={{ marginTop: "16px" }}>
@@ -679,6 +820,30 @@ if (file) {
           )}
         </section>
       </main>
+{showPricingModal && (
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, backdropFilter: "blur(4px)" }}>
+          <div style={{ background: "#0d0d0d", border: "1px solid #222", padding: "32px", borderRadius: "16px", maxWidth: "450px", width: "90%", textAlign: "center", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
+            <h3 style={{ color: "#fff", fontSize: "22px", fontWeight: 800, marginBottom: "12px" }}>Unlock Premium Features</h3>
+            <p style={{ color: "#aaa", fontSize: "14px", lineHeight: "1.6", marginBottom: "24px" }}>
+              Take your developer workflow to the next level. Get unlimited AI-generated documentation, batch processing, and instant API diff tracking with **SDKCraft Pro**.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <button onClick={() => alert("Redirecting to Stripe...")} style={{ background: "#22c55e", color: "#000", border: "none", padding: "12px", borderRadius: "8px", fontWeight: 800, fontSize: "15px", cursor: "pointer" }}>
+                Upgrade Now - $15/mo
+              </button>
+              <button onClick={() => setShowPricingModal(false)} style={{ background: "none", color: "#666", border: "none", padding: "8px", fontSize: "14px", cursor: "pointer" }}>
+                Maybe later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+    </div>
+  </div>
+)}
     </div>
   );
 }
