@@ -426,6 +426,20 @@ if (!check.allowed) {
   };
 
   return (
+    <>
+    {showPricingModal && (
+      <div style={{ position: "fixed", inset: 0, background: "#000000cc", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "24px" }}>
+        <div style={{ background: "#111", border: "1px solid #333", borderRadius: "16px", padding: "40px", maxWidth: "480px", width: "100%", textAlign: "center" }}>
+          <div style={{ fontSize: "40px", marginBottom: "16px" }}>🚀</div>
+          <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "8px" }}>Upgrade to Pro</h2>
+          <p style={{ color: "#888", marginBottom: "24px" }}>You've reached the free tier limit.</p>
+          <div style={{ display: "flex", gap: "12px" }}>
+            <button onClick={() => { setShowPricingModal(false); setShowPricing(true); }} style={{ flex: 1, padding: "14px", borderRadius: "10px", background: "#22c55e", color: "#000", border: "none", fontWeight: 800, cursor: "pointer" }}>View Plans</button>
+            <button onClick={() => setShowPricingModal(false)} style={{ flex: 1, padding: "14px", borderRadius: "10px", background: "transparent", color: "#aaa", border: "1px solid #333", fontWeight: 700, cursor: "pointer" }}>Maybe later</button>
+          </div>
+        </div>
+      </div>
+    )}
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter, system-ui, sans-serif" }}>
       <header style={{ borderBottom: "1px solid #1f1f1f", padding: "16px 32px", display: "flex", alignItems: "center", gap: "10px" }}>
         <span style={{ color: "#22c55e", fontSize: "20px" }}>&lt;/&gt;</span>
@@ -693,5 +707,6 @@ if (!check.allowed) {
         </section>
       </main>
     </div>
+    </>
   );
 }
