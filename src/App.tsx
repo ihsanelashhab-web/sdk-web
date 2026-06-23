@@ -228,11 +228,11 @@ const [freeBatch, setFreeBatch] = useState<number>(0);
 // تحقق من الحد المجاني
 if (file) {
   const check = await checkAndRegisterProject(file);
-  if (!check.allowed) {
-    setError(check.reason || "Upgrade to Pro to generate more SDKs.");
-    setGenerating(false);
-    return;
-  }
+if (!check.allowed) {
+  setGenerating(false);
+  setShowPricingModal(true);
+  return;
+}
 }
     try {
       const formData = new FormData();
