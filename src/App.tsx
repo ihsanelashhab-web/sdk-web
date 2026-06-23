@@ -435,7 +435,7 @@ if (file) {
           <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "8px" }}>Upgrade to Pro</h2>
           <p style={{ color: "#888", marginBottom: "24px" }}>You've reached the free tier limit.</p>
           <div style={{ display: "flex", gap: "12px" }}>
-            <button onClick={() => { setShowPricingModal(false); setShowPricing(true); }} style={{ flex: 1, padding: "14px", borderRadius: "10px", background: "#22c55e", color: "#000", border: "none", fontWeight: 800, cursor: "pointer" }}>View Plans</button>
+            <button onClick={() => { setShowPricingModal(false); setShowPricing(true);window.scrollTo(0, 0); }} style={{ flex: 1, padding: "14px", borderRadius: "10px", background: "#22c55e", color: "#000", border: "none", fontWeight: 800, cursor: "pointer" }}>View Plans</button>
             <button onClick={() => setShowPricingModal(false)} style={{ flex: 1, padding: "14px", borderRadius: "10px", background: "transparent", color: "#aaa", border: "1px solid #333", fontWeight: 700, cursor: "pointer" }}>Maybe later</button>
           </div>
         </div>
