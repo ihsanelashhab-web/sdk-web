@@ -106,7 +106,6 @@ export async function checkAndRegisterProject(file: File): Promise<{
   if ((count ?? 0) >= FREE_LIMIT) {
     return { 
       allowed: false, 
-      reason: `You've reached the free limit of ${FREE_LIMIT} APIs. Upgrade to Pro for unlimited APIs.`,
       isNew: true
     };
   }
