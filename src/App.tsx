@@ -580,7 +580,7 @@ if (file) {
           </section>
         )}
 
-        {user && (
+        {user && isPro && (
           <section style={{ marginTop: "24px", textAlign: "center" }}>
             <button onClick={() => setShowHistory(!showHistory)} style={{ padding: "10px 24px", borderRadius: "10px", border: "1px solid #333", background: "#111", color: "#aaa", cursor: "pointer", fontWeight: 700 }}>
               {showHistory ? "Hide" : "Show"} SDK history ({history.length})
