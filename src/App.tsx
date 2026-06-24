@@ -18,11 +18,26 @@ import { saveSDKHistory, getSDKHistory, deleteSDKHistory, checkAndRegisterProjec
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "https://api-to-sdk-production.up.railway.app";
 
+interface ScoreBreakdown {
+  category: string;
+  score: number;
+  max: number;
+  note: string;
+}
+
+interface SDKScore {
+  total: number;
+  max: number;
+  grade: string;
+  breakdown: ScoreBreakdown[];
+}
+
 interface SDKResult {
   title: string;
   version: string;
   endpoints: number;
   files: Record<string, string>;
+  score?: SDKScore;
 }
 
 interface HistoryItem extends SDKResult {
@@ -545,6 +560,30 @@ if (file) {
         {result && (
           <section style={{ marginTop: "16px", background: "#0f1f0f", border: "1px solid #22c55e33", borderRadius: "12px", padding: "20px" }}>
             <div style={{ color: "#22c55e", fontWeight: 800, fontSize: "18px", marginBottom: "8px" }}>SDK generated successfully</div>
+            {result.score && (
+  <div style={{ background: "#0a0a0a", borderRadius: "10px", padding: "16px", marginBottom: "16px" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+      <div style={{ fontSize: "32px", fontWeight: 800, color: result.score.total >= 80 ? "#22c55e" : result.score.total >= 60 ? "#f59e0b" : "#ef4444" }}>
+        {result.score.grade}
+      </div>
+      <div>
+        <div style={{ fontWeight: 700, fontSize: "16px" }}>SDK Quality Score</div>
+        <div style={{ color: "#888", fontSize: "13px" }}>{result.score.total}/{result.score.max} points</div>
+      </div>
+    </div>
+    {result.score.breakdown.map((item) => (
+      <div key={item.category} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid #1f1f1f" }}>
+        <div>
+          <span style={{ fontSize: "13px", color: "#aaa" }}>{item.category}</span>
+          <span style={{ fontSize: "12px", color: "#555", marginLeft: "8px" }}>{item.note}</span>
+        </div>
+        <span style={{ fontSize: "13px", fontWeight: 700, color: item.score === item.max ? "#22c55e" : item.score > 0 ? "#f59e0b" : "#ef4444" }}>
+          {item.score}/{item.max}
+        </span>
+      </div>
+    ))}
+  </div>
+)}
             <div style={{ color: "#888", marginBottom: "16px" }}>
               {result.title} v{result.version} - {result.endpoints} endpoints
             </div>
