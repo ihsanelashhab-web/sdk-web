@@ -406,9 +406,12 @@ if (file) {
       await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
-          scopes: "repo",
-          redirectTo: getRedirectUrl(),
-        },
+  scopes: "repo user",
+  queryParams: {
+    access_type: "offline",
+  },
+  redirectTo: getRedirectUrl(),
+},
       });
       return;
     }
