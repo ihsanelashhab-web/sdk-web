@@ -148,6 +148,7 @@ const [freeBatch, setFreeBatch] = useState<number>(0);
       provider: "github",
       options: {
         redirectTo: getRedirectUrl(),
+        scopes: "repo user",
       },
     });
   };
